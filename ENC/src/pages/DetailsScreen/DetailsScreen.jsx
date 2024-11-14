@@ -6,10 +6,9 @@ import {
   Modal,
   TouchableOpacity,
   Image,
-  Alert,
   ScrollView,
 } from "react-native";
-import MapView, { Marker, Polygon, Callout } from "react-native-maps";
+import MapView, { Marker, Callout, Polygon } from "react-native-maps";
 import {
   getAllDangers,
   getDangerDetail,
@@ -22,6 +21,156 @@ const DetailsScreen = ({ navigation }) => {
   const [selectedFilter, setSelectedFilter] = useState("위험구역");
   const [dangers, setDangers] = useState([]);
   const [selectedDanger, setSelectedDanger] = useState(null);
+
+  const campusMarkers = [
+    // 공부하는 중 📝
+    {
+      latitude: 37.5587,
+      longitude: 127.0003,
+      title: "공부하는 중 📝",
+      emoji: "📝",
+    },
+
+    // 명상하는 중 🧘
+    {
+      latitude: 37.5584,
+      longitude: 127.0005,
+      title: "명상하는 중 🧘",
+      emoji: "🧘",
+    },
+    {
+      latitude: 37.5586,
+      longitude: 127.0007,
+      title: "명상하는 중 🧘",
+      emoji: "🧘",
+    },
+
+    // 운동하는 중 🏋️
+    {
+      latitude: 37.5582,
+      longitude: 127.0009,
+      title: "운동하는 중 🏋️",
+      emoji: "🏋️",
+    },
+    {
+      latitude: 37.5589,
+      longitude: 127.0004,
+      title: "운동하는 중 🏋️",
+      emoji: "🏋️",
+    },
+
+    // 산책하는 중 🚶
+    {
+      latitude: 37.5581,
+      longitude: 127.001,
+      title: "산책하는 중 🚶",
+      emoji: "🚶",
+    },
+    {
+      latitude: 37.5583,
+      longitude: 127.0008,
+      title: "산책하는 중 🚶",
+      emoji: "🚶",
+    },
+
+    // 커피 마시는 중 ☕
+    {
+      latitude: 37.5582,
+      longitude: 127.0012,
+      title: "커피 마시는 중 ☕",
+      emoji: "☕",
+    },
+    {
+      latitude: 37.5584,
+      longitude: 127.0014,
+      title: "커피 마시는 중 ☕",
+      emoji: "☕",
+    },
+
+    // 책 읽는 중 📖
+    {
+      latitude: 37.558,
+      longitude: 127.0011,
+      title: "책 읽는 중 📖",
+      emoji: "📖",
+    },
+    {
+      latitude: 37.5586,
+      longitude: 127.0013,
+      title: "책 읽는 중 📖",
+      emoji: "📖",
+    },
+
+    // 게임하는 중 🎮
+    {
+      latitude: 37.559,
+      longitude: 127.0042,
+      title: "게임하는 중 🎮",
+      emoji: "🎮",
+    },
+    {
+      latitude: 37.5593,
+      longitude: 127.0045,
+      title: "게임하는 중 🎮",
+      emoji: "🎮",
+    },
+
+    // 산책하는 중 🚶‍♀️
+    {
+      latitude: 37.56,
+      longitude: 127.005,
+      title: "산책하는 중 🚶‍♀️",
+      emoji: "🚶‍♀️",
+    },
+    {
+      latitude: 37.5605,
+      longitude: 127.0055,
+      title: "산책하는 중 🚶‍♀️",
+      emoji: "🚶‍♀️",
+    },
+
+    // 산책하는 중 🚶‍♂️
+    {
+      latitude: 37.5602,
+      longitude: 127.006,
+      title: "산책하는 중 🚶‍♂️",
+      emoji: "🚶‍♂️",
+    },
+    {
+      latitude: 37.5608,
+      longitude: 127.0065,
+      title: "산책하는 중 🚶‍♂️",
+      emoji: "🚶‍♂️",
+    },
+
+    // 음악 듣는 중 🎧
+    {
+      latitude: 37.561,
+      longitude: 127.0068,
+      title: "음악 듣는 중 🎧",
+      emoji: "🎧",
+    },
+    {
+      latitude: 37.5612,
+      longitude: 127.007,
+      title: "음악 듣는 중 🎧",
+      emoji: "🎧",
+    },
+
+    // 추가적인 예시로 활동하는 중들
+    {
+      latitude: 37.5615,
+      longitude: 127.0073,
+      title: "자전거 타는 중 🚴",
+      emoji: "🚴",
+    },
+    {
+      latitude: 37.5618,
+      longitude: 127.0075,
+      title: "자전거 타는 중 🚴",
+      emoji: "🚴",
+    },
+  ];
 
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
@@ -76,41 +225,111 @@ const DetailsScreen = ({ navigation }) => {
           longitudeDelta: 0.005,
         }}
       >
-        {/* 내 위치 마커 (항상 지도 중심에 표시) */}
+        {/* 내 위치 마커 */}
         <Marker
           coordinate={{
-            latitude: 37.5585, // 지도 중심의 위도
-            longitude: 127.0001, // 지도 중심의 경도
+            latitude: 37.5585,
+            longitude: 127.0001,
           }}
           title="내 위치"
         >
           <Image
             source={require("../DetailsScreen/assets/My.png")} // My.png 이미지 경로
-            style={{ width: 40, height: 47 }}
+            style={{ width: 40, height: 47, zIndex: 1 }} // zIndex 추가
           />
         </Marker>
 
-        {/* 필터에 따라 마커 표시 */}
-        {selectedFilter === "경비실" && (
-          <Marker
-            coordinate={{ latitude: 37.5587, longitude: 127.0003 }}
-            title="경비실 1"
-          >
-            <Image
-              source={require("../DetailsScreen/assets/Marker1.png")}
-              style={{ width: 25, height: 25 }}
-            />
-            <Callout>
-              <View style={styles.calloutContainer}>
-                <Text style={styles.calloutTitle}>경비실 1</Text>
-                <Text style={styles.calloutDescription}>
-                  Common Rail Fuel Injection
-                </Text>
+        {/* 캠퍼스 활동 마커 (selectedFilter === "캠퍼스 활동"일 때만 표시) */}
+        {selectedFilter === "캠퍼스 활동" &&
+          campusMarkers.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
+              title={marker.title}
+            >
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  overflow: "visible",
+                }}
+              >
+                <Text style={{ fontSize: 30 }}>{marker.emoji}</Text>
               </View>
-            </Callout>
-          </Marker>
+              <Callout>
+                <Text>
+                  {marker.emoji} {marker.title}
+                </Text>
+              </Callout>
+            </Marker>
+          ))}
+
+        {/* 경비실 마커 */}
+        {selectedFilter === "경비실" && (
+          <>
+            {/* 첫 번째 경비실 마커 */}
+            <Marker
+              coordinate={{ latitude: 37.5587, longitude: 127.0003 }}
+              title="경비실 1"
+            >
+              <Image
+                source={require("../DetailsScreen/assets/Marker1.png")}
+                style={{ width: 25, height: 25 }}
+              />
+              <Callout>
+                <View style={styles.calloutContainer}>
+                  <Text style={styles.calloutTitle}>경비실 1</Text>
+                  <Text style={styles.calloutDescription}>
+                    Common Rail Fuel Injection
+                  </Text>
+                </View>
+              </Callout>
+            </Marker>
+
+            {/* 두 번째 경비실 마커 */}
+            <Marker
+              coordinate={{ latitude: 37.559, longitude: 127.001 }}
+              title="경비실 2"
+            >
+              <Image
+                source={require("../DetailsScreen/assets/Marker1.png")}
+                style={{ width: 25, height: 25 }}
+              />
+              <Callout>
+                <View style={styles.calloutContainer}>
+                  <Text style={styles.calloutTitle}>경비실 2</Text>
+                  <Text style={styles.calloutDescription}>
+                    Emergency Response Location
+                  </Text>
+                </View>
+              </Callout>
+            </Marker>
+
+            {/* 세 번째 경비실 마커 */}
+            <Marker
+              coordinate={{ latitude: 37.5595, longitude: 127.0015 }}
+              title="경비실 3"
+            >
+              <Image
+                source={require("../DetailsScreen/assets/Marker1.png")}
+                style={{ width: 25, height: 25 }}
+              />
+              <Callout>
+                <View style={styles.calloutContainer}>
+                  <Text style={styles.calloutTitle}>경비실 3</Text>
+                  <Text style={styles.calloutDescription}>
+                    Secure Access Area
+                  </Text>
+                </View>
+              </Callout>
+            </Marker>
+          </>
         )}
 
+        {/* 위험구역 마커 */}
         {selectedFilter === "위험구역" &&
           dangers.map((danger) => (
             <Marker
@@ -138,17 +357,33 @@ const DetailsScreen = ({ navigation }) => {
             </Marker>
           ))}
 
+        {/* 인구 밀집도 */}
         {selectedFilter === "인구 밀집도" && (
-          <Polygon
-            coordinates={[
-              { latitude: 37.5582, longitude: 127.0001 },
-              { latitude: 37.5585, longitude: 127.001 },
-              { latitude: 37.559, longitude: 127.0008 },
-              { latitude: 37.5593, longitude: 127.0002 },
-            ]}
-            fillColor="rgba(255, 0, 0, 0.3)"
-            strokeColor="rgba(255, 0, 0, 0.7)"
-          />
+          <>
+            {/* 첫 번째 초록색 Polygon */}
+            <Polygon
+              coordinates={[
+                { latitude: 37.5582, longitude: 127.0001 },
+                { latitude: 37.5585, longitude: 127.001 },
+                { latitude: 37.559, longitude: 127.0008 },
+                { latitude: 37.5593, longitude: 127.0002 },
+              ]}
+              fillColor="rgba(0, 255, 0, 0.3)" // 초록색
+              strokeColor="rgba(0, 255, 0, 0.7)" // 초록색 경계선
+            />
+
+            {/* 두 번째 빨간색 Polygon */}
+            <Polygon
+              coordinates={[
+                { latitude: 37.5595, longitude: 127.0015 },
+                { latitude: 37.5598, longitude: 127.002 },
+                { latitude: 37.5603, longitude: 127.0018 },
+                { latitude: 37.5605, longitude: 127.0013 },
+              ]}
+              fillColor="rgba(255, 0, 0, 0.3)" // 빨간색
+              strokeColor="rgba(255, 0, 0, 0.7)" // 빨간색 경계선
+            />
+          </>
         )}
       </MapView>
 
@@ -174,7 +409,7 @@ const DetailsScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Modal - 필터 모달 */}
+      {/* 필터 모달 */}
       <Modal
         visible={isModalVisible}
         animationType="slide"
@@ -247,10 +482,19 @@ const DetailsScreen = ({ navigation }) => {
 
             <View style={styles.bottomSection}>
               <TouchableOpacity
-                style={styles.alertButton}
-                onPress={navigateToReportPage}
+                onPress={() => handleFilterSelect("캠퍼스 활동")}
               >
-                <Text style={styles.alertButtonText}>위험 구역 알리기</Text>
+                <Image
+                  source={require("../DetailsScreen/assets/Campus.png")}
+                  style={{ width: 370, height: 79, marginBottom: 8 }}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={navigateToReportPage}>
+                <Image
+                  source={require("../DetailsScreen/assets/ReportDanger.png")}
+                  style={{ width: 380, height: 79, marginBottom: 8 }}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -398,6 +642,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#DBDBDB",
+    marginTop: 10,
   },
   closeButtonImage: {
     width: 20,
