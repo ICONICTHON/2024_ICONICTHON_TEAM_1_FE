@@ -20,10 +20,10 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.dashboard}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("details")}
+          onPress={() => navigation.navigate("main")}
         >
           <Image
-            source={require("./assets/dash-board.png")} // 이미지 파일 경로
+            source={require("./assets/enc.png")} // 이미지 파일 경로
             style={styles.dashboard}
           />
         </TouchableOpacity>
