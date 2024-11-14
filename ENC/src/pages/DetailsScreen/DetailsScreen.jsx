@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Button,
   StyleSheet,
   Modal,
   TouchableOpacity,
+  Image,
 } from "react-native";
-import MapView, { Marker, Polygon } from "react-native-maps";
+import MapView, { Marker, Polygon, Callout } from "react-native-maps";
 
 const DetailsScreen = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState("위험구역");
 
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
@@ -19,6 +19,11 @@ const DetailsScreen = ({ navigation }) => {
   const handleFilterSelect = (filter) => {
     setSelectedFilter(filter);
     closeModal();
+  };
+
+  // 위험구역 알리기 페이지로 이동
+  const navigateToReportPage = () => {
+    navigation.navigate("ReportDangerZone");
   };
 
   return (
@@ -29,43 +34,69 @@ const DetailsScreen = ({ navigation }) => {
         initialRegion={{
           latitude: 37.5585,
           longitude: 127.0001,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
         }}
       >
-        {/* 경비실 마커 */}
+        {/* 필터에 따라 마커 표시 */}
         {selectedFilter === "경비실" && (
           <>
             <Marker
               coordinate={{ latitude: 37.5587, longitude: 127.0003 }}
               title="경비실 1"
-            />
+              pinColor="blue"
+            >
+              <Image
+                source={require("../DetailsScreen/assets/Marker1.png")}
+                style={{ width: 25, height: 25 }} // 마커 이미지 크기 조정
+              />
+              <Callout>
+                <View style={styles.calloutContainer}>
+                  <Text style={styles.calloutTitle}>경비실 1</Text>
+                  <Text style={styles.calloutDescription}>
+                    Common Rail Fuel Injection
+                  </Text>
+                </View>
+              </Callout>
+            </Marker>
             <Marker
               coordinate={{ latitude: 37.559, longitude: 127.0006 }}
               title="경비실 2"
-            />
+              pinColor="blue"
+            >
+              <Image
+                source={require("../DetailsScreen/assets/Marker1.png")}
+                style={{ width: 25, height: 25 }} // 마커 이미지 크기 조정
+              />
+            </Marker>
           </>
         )}
 
-        {/* 위험구역 마커 */}
         {selectedFilter === "위험구역" && (
           <>
             <Marker
               coordinate={{ latitude: 37.5582, longitude: 127.0005 }}
               title="위험구역"
               pinColor="red"
-              description="공사 중"
-            />
+            >
+              <Image
+                source={require("../DetailsScreen/assets/Marker2.png")}
+                style={{ width: 25, height: 25 }} // 마커 이미지 크기 조정
+              />
+            </Marker>
             <Marker
               coordinate={{ latitude: 37.5589, longitude: 127.001 }}
               title="위험구역"
               pinColor="red"
-              description="공사 중"
-            />
+            >
+              <Image
+                source={require("../DetailsScreen/assets/Marker2.png")}
+                style={{ width: 25, height: 25 }} // 마커 이미지 크기 조정
+              />
+            </Marker>
           </>
         )}
 
-        {/* 인구 밀집도 히트맵 효과 */}
         {selectedFilter === "인구 밀집도" && (
           <Polygon
             coordinates={[
@@ -80,16 +111,31 @@ const DetailsScreen = ({ navigation }) => {
         )}
       </MapView>
 
-      {/* 지도 위에 겹쳐지는 다른 UI 요소 */}
-      <View style={styles.infoPanel}>
-        <Text style={styles.infoTitle}>현재 내 주변</Text>
-        <Text style={styles.infoSubtitle}>신공학관</Text>
-        <TouchableOpacity onPress={openModal} style={styles.filterButton}>
-          <Text style={styles.filterButtonText}>Filter</Text>
+      {/* 상단 바 */}
+      <View style={styles.header}>
+        {/* 뒤로가기 버튼 */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Image
+            style={styles.backIcon}
+            resizeMode="cover"
+            source={require("../DetailsScreen/assets/Back.png")}
+          />
+        </TouchableOpacity>
+
+        {/* 필터 버튼 */}
+        <TouchableOpacity style={styles.filterButton} onPress={openModal}>
+          <Image
+            style={styles.filterIcon}
+            resizeMode="cover"
+            source={require("../DetailsScreen/assets/Group.png")}
+          />
         </TouchableOpacity>
       </View>
 
-      {/* Modal */}
+      {/* Modal (하단에서 슬라이드) */}
       <Modal
         visible={isModalVisible}
         animationType="slide"
@@ -97,23 +143,74 @@ const DetailsScreen = ({ navigation }) => {
         onRequestClose={closeModal}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Filter</Text>
-            <Button
-              title="경비실"
-              onPress={() => handleFilterSelect("경비실")}
-            />
-            <Button
-              title="인구 밀집도"
-              onPress={() => handleFilterSelect("인구 밀집도")}
-            />
-            <Button
-              title="위험구역"
-              onPress={() => handleFilterSelect("위험구역")}
-            />
+          {/* 현재 내 주변 정보 패널 (상단에 고정, 약간 겹치도록 설정) */}
+          <View style={styles.infoPanel}>
             <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>닫기</Text>
+              <Image
+                style={styles.closeButtonImage}
+                source={require("../DetailsScreen/assets/Delete.png")}
+              />
             </TouchableOpacity>
+            <View style={styles.infoTitleContainer}>
+              <Text style={styles.infoTitle}>현재 내 주변</Text>
+            </View>
+            <View style={styles.infoSubtitleContainer}>
+              <Image
+                style={styles.arrowImage}
+                source={require("../DetailsScreen/assets/Arrow.png")}
+              />
+              <Text style={styles.infoSubtitle}>신공학관</Text>
+            </View>
+          </View>
+          <View style={styles.modalContent}>
+            {/* Filter 내용 */}
+            <Text style={styles.filterTitle}>Filter</Text>
+
+            {/* 필터 버튼들 - 가로로 정렬 */}
+            <View style={styles.filterButtonsContainer}>
+              <TouchableOpacity
+                onPress={() => handleFilterSelect("경비실")}
+                style={styles.filterOption}
+              >
+                <Text style={styles.filterText}>경비실</Text>
+                <Text style={styles.filterDescription}>
+                  Common Rail Fuel Injection
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleFilterSelect("인구 밀집도")}
+                style={styles.filterOption}
+              >
+                <Text style={styles.filterText}>인구 밀집도</Text>
+                <Text style={styles.filterDescription}>0 - 100km / 11s</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleFilterSelect("위험구역")}
+                style={styles.filterOption}
+              >
+                <Text style={styles.filterText}>위험 구역</Text>
+                <Text style={styles.filterDescription}>
+                  Temp Control on seat
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* 하단 알림 버튼 */}
+            <View style={styles.bottomSection}>
+              <View style={styles.costContainer}>
+                <Text style={styles.cost}>$120</Text>
+              </View>
+
+              {/* 위험구역 알리기 버튼 */}
+              <TouchableOpacity
+                style={styles.alertButton}
+                onPress={navigateToReportPage}
+              >
+                <Text style={styles.alertButtonText}>위험 구역 알리기</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -129,61 +226,143 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  infoPanel: {
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingTop: 40,
+    paddingHorizontal: 20,
     position: "absolute",
-    bottom: 0,
+    top: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#d1c4e9", // 임시 색상
+    zIndex: 1,
+  },
+  backButton: {
+    padding: 10,
+  },
+  backIcon: {
+    width: 24,
+    height: 24,
+  },
+  filterButton: {
+    padding: 10,
+  },
+  filterIcon: {
+    width: 24,
+    height: 24,
+  },
+  infoPanel: {
+    backgroundColor: "#897C75",
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    zIndex: 2,
+    marginBottom: -10,
+    width: "100%",
+  },
+  infoTitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   infoTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "white",
+  },
+  infoSubtitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  arrowImage: {
+    width: 16,
+    height: 16,
+    marginRight: 10,
   },
   infoSubtitle: {
     fontSize: 14,
-    color: "gray",
+    color: "white",
     marginBottom: 10,
   },
-  filterButton: {
-    backgroundColor: "#fbc02d",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  filterButtonText: {
-    color: "white",
-    fontWeight: "bold",
+  closeButtonImage: {
+    width: 20,
+    height: 20,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: "80%",
-    backgroundColor: "white",
+    width: "100%",
+    backgroundColor: "#ffffff",
     padding: 20,
-    borderRadius: 10,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 15,
+    marginTop: -10,
+    zIndex: 3,
   },
   closeButton: {
-    marginTop: 20,
-    backgroundColor: "#f44336",
-    padding: 10,
-    borderRadius: 5,
+    position: "absolute",
+    top: 10,
+    right: 10,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  closeButtonText: {
+  filterTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  filterButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginBottom: 20,
+  },
+  filterOption: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    borderRadius: 10,
+    width: "30%",
+    alignItems: "center",
+  },
+  filterText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  filterDescription: {
+    fontSize: 12,
+    color: "gray",
+  },
+  bottomSection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 20,
+  },
+  costContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  cost: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  alertButton: {
+    backgroundColor: "#FFEB3B",
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  alertButtonText: {
     color: "white",
     fontWeight: "bold",
   },
