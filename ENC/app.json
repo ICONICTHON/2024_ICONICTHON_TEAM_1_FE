@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "permissions": ["CAMERA", "MEDIA_LIBRARY"],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -21,11 +22,11 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.dewbeeny.ENC",
-       "config": {
-    "googleMaps": {
-      "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
-    }
-  }
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,6 +35,9 @@
       "eas": {
         "projectId": "7c3dcb6e-4bf6-426a-9eb3-a3eb24e7a5bc"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
