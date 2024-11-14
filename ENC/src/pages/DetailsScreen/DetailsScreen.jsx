@@ -486,7 +486,12 @@ const DetailsScreen = ({ navigation }) => {
               >
                 <Image
                   source={require("../DetailsScreen/assets/Campus.png")}
-                  style={{ width: 370, height: 79, marginBottom: 8 }}
+                  style={{
+                    width: 370,
+                    height: 79,
+                    marginBottom: 8,
+                    marginLeft: 9,
+                  }}
                 />
               </TouchableOpacity>
 
